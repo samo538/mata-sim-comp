@@ -1,0 +1,12 @@
+simulation:
+  cmd: src/bench-reduction $1 simulation
+
+residual:
+  cmd: src/bench-reduction $1 residual
+
+brzozowski:
+  cmd: src/bench-reduction $1 brzozowski
+
+hopcroft:
+  cmd: src/bench-reduction $1 hopcroft
+
