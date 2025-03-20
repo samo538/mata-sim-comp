@@ -60,8 +60,10 @@ int main(int argc, char *argv[])
     }
     else if (algorithm == "hopcroft"){
         TIME_BEGIN(reduction);
+        // The automata first needs to be determinized
 
-        result = mata::nfa::minimize(aut, ParameterMap{{"algorithm", algorithm}});
+        result = mata::nfa::determinize(aut);
+        result = mata::nfa::minimize(result, ParameterMap{{"algorithm", algorithm}});
 
         TIME_END(reduction);
     }
