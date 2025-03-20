@@ -34,4 +34,5 @@ cd results
 
 # Visualising the output
 
-TODO
+cd visual
+python3 graph.py [path/to/file] [path/to/file] [states | transitions | time]
