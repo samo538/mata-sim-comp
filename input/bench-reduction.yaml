@@ -4,6 +4,9 @@ simulation:
 simulation-fixpoint:
   cmd: src/bench-reduction $1 simulation-fixpoint
 
+simulation-bidirect:
+  cmd: src/bench-reduction $1 simulation-bidirect
+
 residual:
   cmd: src/bench-reduction $1 residual
 

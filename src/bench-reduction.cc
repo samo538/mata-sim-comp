@@ -51,6 +51,13 @@ int main(int argc, char *argv[])
 
         TIME_END(reduction);
     }
+    if (algorithm == "simulation-bidirect"){
+        TIME_BEGIN(reduction);
+    
+        result = mata::nfa::reduce(aut, 0, ParameterMap{{"algorithm", "simulation"}, {"direction", "bidirect"}});
+
+        TIME_END(reduction);
+    }
     else if (algorithm == "residual"){
         TIME_BEGIN(reduction);
 
