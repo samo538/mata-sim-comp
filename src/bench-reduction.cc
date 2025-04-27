@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     if (load_automaton(filename, aut, alphabet, MINTERMIZE_AUTOMATA) != EXIT_SUCCESS) {
         return EXIT_FAILURE;
     }
-    
+
     // Setting precision of the times to fixed points and 4 decimal places
     std::cout << std::fixed << std::setprecision(4);
 
@@ -44,16 +44,16 @@ int main(int argc, char *argv[])
 
         TIME_END(reduction);
     }
-    if (algorithm == "simulation-fixpoint"){
+    else if (algorithm == "simulation-fixpoint"){
         TIME_BEGIN(reduction);
     
         result = mata::nfa::reduce(aut, 0, ParameterMap{{"algorithm", "simulation"}, {"direction", "fixpoint"}});
 
         TIME_END(reduction);
     }
-    if (algorithm == "simulation-bidirect"){
+    else if (algorithm == "simulation-bidirect"){
         TIME_BEGIN(reduction);
-    
+
         result = mata::nfa::reduce(aut, 0, ParameterMap{{"algorithm", "simulation"}, {"direction", "bidirect"}});
 
         TIME_END(reduction);
