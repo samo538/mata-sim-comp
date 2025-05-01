@@ -5,6 +5,46 @@ import tabulate
 import sys
 import statistics
 
+def categ_x(row, what):
+    # logic
+    if (row[0][:40] == "automata/nfa-bench/benchmarks/presburger"):
+        logic_x.append(what)
+
+    # regex
+    elif (row[0][:42] == "automata/nfa-bench/benchmarks/email_filter"):
+        regex_x.append(what)
+
+    # operations
+    elif (row[0][:40] == "automata/nfa-bench/benchmarks/z3-noodler"):
+        operations_x.append(what)
+    elif (row[0][:39] == "automata/nfa-bench/benchmarks/bool_comb"):
+        operations_x.append(what)
+    elif (row[0][:48] == "automata/nfa-bench/benchmarks/automata_inclusion"):
+        operations_x.append(what)
+
+
+def categ_y(row, what):
+    # logic
+    if (row[0][:40] == "automata/nfa-bench/benchmarks/presburger"):
+        logic_y.append(what)
+
+    # regex
+    elif (row[0][:42] == "automata/nfa-bench/benchmarks/email_filter"):
+        regex_y.append(what)
+
+    # operations
+    elif (row[0][:40] == "automata/nfa-bench/benchmarks/z3-noodler"):
+        operations_y.append(what)
+    elif (row[0][:39] == "automata/nfa-bench/benchmarks/bool_comb"):
+        operations_y.append(what)
+    elif (row[0][:48] == "automata/nfa-bench/benchmarks/automata_inclusion"):
+        operations_y.append(what)
+
+def fix_timeout(to_fix):
+    for i in range(0, len(to_fix)):
+        if (to_fix[i] == 'TO'):
+            to_fix[i] = limit
+
 # global variables
 x = []
 y = []
@@ -20,9 +60,26 @@ rt_timeout = 0
 iny_priemer = 0
 rt_priemer = 0
 
-if (len(sys.argv) != 4):
-    print("python3 graph.py [horisontal_axis] [vertical_axis] [metric]")
+# set the division into categories false by default
+categories = False
+logic_x = []
+logic_y = []
+regex_x = []
+regex_y = []
+operations_x = []
+operations_y = []
+
+if (len(sys.argv) != 4 and len(sys.argv) != 5):
+    print("python3 graph.py [horisontal_axis] [vertical_axis] [metric] {categories}")
     sys.exit()
+
+if (len(sys.argv) == 5):
+    if (sys.argv[4] == "categories"):
+        categories = True
+    else:
+        print("python3 graph.py [horisontal_axis] [vertical_axis] [metric] {categories}")
+        sys.exit()
+
 
 # open files
 csvfile = open(sys.argv[1], 'r')
@@ -46,6 +103,10 @@ elif (sys.argv[3] == "transitions"):
     color = 'orange'
     selector = 5
     limit = '5000'
+else:
+    print("python3 graph.py [horisontal_axis] [vertical_axis] [metric] {categories}")
+    sys.exit()
+
 
 # parse x axis data
 for row in plots:
@@ -57,9 +118,13 @@ for row in plots:
     if (row[selector] == 'TO' or row[selector] == 'ERR'):
         iny_timeout = iny_timeout + 1;
         x.append('TO');
+        if (categories):
+            categ_x(row, 'TO')
         continue
 
-    x.append(float(row[selector]));
+    x.append(float(row[selector]))
+    if (categories):
+        categ_x(row, float(row[selector]))
 
 # parse y axis data
 for row in plots2:
@@ -69,11 +134,15 @@ for row in plots2:
     count_y = count_y + 1
 
     if (row[selector] == 'TO' or row[selector] == 'ERR'):
-        rt_timeout = rt_timeout + 1;
-        y.append('TO');
+        rt_timeout = rt_timeout + 1
+        y.append('TO')
+        if (categories):
+            categ_y(row, 'TO')
         continue
 
-    y.append(float(row[selector]));
+    y.append(float(row[selector]))
+    if (categories):
+        categ_y(row, float(row[selector]))
 #    match = re.match(r'([a-z]*)\/b-([a-z-]*)\/(aut[0-9]*)', row[0])
 #    x.append('{0},{1}'.format(match[2], match[3]))
 #    y.append(float(row[3]))
@@ -99,13 +168,15 @@ else:
         limit = int(max(y_helper) * 1.1)
 
 # replace all timeouts with the limit
-for i in range(0, len(x)):
-    if (x[i] == 'TO'):
-        x[i] = limit
+fix_timeout(x)
+fix_timeout(logic_x)
+fix_timeout(regex_x)
+fix_timeout(operations_x)
 
-for i in range(0, len(y)):
-    if (y[i] == 'TO'):
-        y[i] = limit
+fix_timeout(y)
+fix_timeout(logic_y)
+fix_timeout(regex_y)
+fix_timeout(operations_y)
 
 # sanity check
 if (count_x != count_y):
@@ -152,7 +223,13 @@ table = tabulate.tabulate(data,headers = "keys", tablefmt="pipe",colalign=("left
 print(table)
 
 # the plot
-plt.scatter(x, y, color = color,s = 25)
+if (not(categories)):
+    plt.scatter(x, y, color = color,s = 25)
+else:
+    plt.scatter(logic_x, logic_y, color = 'b',s = 25)
+    plt.scatter(regex_x, regex_y, color = 'g',s = 25)
+#    plt.scatter(operations_x, operations_y, color = 'r',s = 25)
+
 plt.xlabel(sys.argv[1], fontsize = 18) 
 plt.ylabel(sys.argv[2], fontsize = 18) 
 plt.xscale("log") 
